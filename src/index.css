@@ -9,10 +9,7 @@ body {
   font-weight: 400;
   line-height: 1;
 }
-main {
-  /* width: clamp(375px, 80%, 800px);
-  margin: auto; */
-}
+
 .btn {
   border: none;
   background-color: rgba(30, 148, 251, 0.344);
@@ -20,6 +17,7 @@ main {
   border-radius: 5px;
   padding: 5px 1rem;
   text-transform: capitalize;
+  cursor: pointer;
 }
 nav {
   background: rgb(30, 148, 251);

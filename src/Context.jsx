@@ -1,4 +1,4 @@
-import { createContext, useContext, useReducer } from "react";
+import { createContext, useContext, useEffect, useReducer } from "react";
 import { reducer } from "./reducer";
 import {
   CLEAR_CART,
@@ -8,32 +8,64 @@ import {
   LOADING,
   DISPLAY_ITEMS,
 } from "./actions";
-import cartItems from "./data";
+import { getTotal } from "./utils-totals";
 
 const GlobalContext = createContext();
 
-export const GlobalAppContext = ({ children }) => {
-  const res = cartItems.map((item) => {
-    return [item.id, item];
-  });
-  const map = new Map(res);
+const initialState = {
+  isLoading: false,
+  cart: new Map(),
+};
 
-  const initialState = {
-    loading: false,
-    cart: map,
-  };
+export const GlobalAppContext = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
+
+  const { totalAmount, totalCost } = getTotal(state.cart);
 
   // actions
   const clearCart = () => {
     dispatch({ type: CLEAR_CART });
   };
-
   const removeItem = (id) => {
     dispatch({ type: REMOVE, payload: id });
   };
+  const increase = (id) => {
+    dispatch({ type: INCREASE, payload: id });
+  };
+  const decrease = (id) => {
+    dispatch({ type: DECREASE, payload: id });
+  };
+
+  // fetch data
+
+  const url = "https://course-api.com/react-useReducer-cart-project";
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        dispatch({ type: LOADING });
+        const res = await fetch(url);
+        const cart = await res.json();
+        dispatch({ type: DISPLAY_ITEMS, payload: { cart } });
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    fetchData();
+  }, []);
+
   return (
-    <GlobalContext.Provider value={{ ...state, clearCart, removeItem }}>
+    <GlobalContext.Provider
+      value={{
+        ...state,
+        totalAmount,
+        totalCost,
+        clearCart,
+        removeItem,
+        increase,
+        decrease,
+      }}
+    >
       <>{children}</>
     </GlobalContext.Provider>
   );
@@ -41,29 +73,3 @@ export const GlobalAppContext = ({ children }) => {
 
 // custom hook
 export const useGlobalContext = () => useContext(GlobalContext);
-
-// let cart = new Map([
-//   ["banana", { name: "banana" }],
-//   ["apple", { name: "apple" }],
-// ]);
-
-// console.log([...cart]);
-// console.log(cart.entries());
-
-// console.log(map);
-// for (let [key, value] of cart) {
-//   console.log(key, value);
-// }
-// let a = {
-//   name: "banana",
-//   name1: "apple",
-// };
-
-// for (let [b, c] in a) {
-//   console.log(b);
-//   console.log(c);
-// }
-// for (let b in Object.entries(a)) {
-//   console.log(b);
-// }
-// console.log(Object.entries(a));

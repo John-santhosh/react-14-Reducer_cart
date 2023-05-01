@@ -10,7 +10,7 @@ import {
   DISPLAY_ITEMS,
 } from "../actions";
 const CartContainer = () => {
-  const { cart, clearCart } = useGlobalContext();
+  const { cart, clearCart, totalCost } = useGlobalContext();
   //we can also use
   // console.log([...cart]);
   // console.log(Array.from(cart));
@@ -45,7 +45,7 @@ const CartContainer = () => {
         <hr />
         <div>
           <h5 className="cart-total">
-            total <span>$10</span>
+            total <span>${totalCost.toFixed(2)}</span>
           </h5>
         </div>
         <button className="btn btn-hipster" onClick={() => clearCart()}>
